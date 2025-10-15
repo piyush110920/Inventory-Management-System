@@ -142,7 +142,7 @@
         "X7700D", "X7900", "X7800", "X7090", "X7080", "X7050D", "X8550", "X8553", 
         "X8555", "E7066", "E7566", "E7500", "E7000", "E7575", "E7570", "E6858", 
         "E7999", "E6888", "E7510D", "E7510A", "E7010D", "E7010A", "S2385H", "S485H", 
-        "2M1S", "S2345", "X6070", "X6050", "X9090", "X9900", "Edge8000", 
+        "2M1S", "S2345", "X6070", "X6050", "X9090", "X9900", "Edge8000", "X9000" ,
         "SenseBT222", "SenseCT222"
     ].sort();
 
@@ -238,7 +238,7 @@
       activeBtn.querySelector('.btn-text').textContent = 'Processing...';
 
       const formData = new FormData();
-      formData.append("QA", document.getElementById("qualityCert").files[0]);
+      formData.append("QC", document.getElementById("qualityCert").files[0]);
       formData.append("IV", document.getElementById("invoicePdf").files[0]);
       formData.append("product", document.getElementById("selectedProduct").value);
       formData.append("action", actionType);
