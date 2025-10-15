@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .transition-all-enhanced {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .file-dropzone {
+      border: 2px dashed #d1d5db;
+      background-color: #f9fafb;
+    }
+    .file-dropzone:hover {
+      border-color: #6366f1;
+      background-color: #f3f4f6;
+    }
+    .file-preview-text {
+      display: inline-block;
+      margin-top: 8px;
+      font-style: italic;
+      color: #6b7280;
+      height: 1.5rem; 
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-6 min-h-screen flex items-center justify-center font-sans">
+  
+  <div id="loginContainer" class="max-w-md w-full mx-auto">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-blue-500 drop-shadow-sm tracking-tight">
+        Inventory Management System
+      </h1>
+      <h2 class="text-2xl font-bold text-gray-800 mt-4">Welcome Back</h2>
+      <p class="text-md text-gray-500 mt-2">Please login with your credentials to continue.</p>
+    </div>
+    <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+      <form id="loginForm" class="space-y-6">
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+          <div class="mt-1">
+            <input id="username" type="text" required class="w-full p-3 border bg-gray-50 border-gray-300 text-gray-900 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+          </div>
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <div class="mt-1 relative">
+            <input id="password" type="password" required class="w-full p-3 pr-10 border bg-gray-50 border-gray-300 text-gray-900 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400 hover:text-gray-600">
+              <svg id="eyeIcon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              <svg id="eyeOffIcon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.243 4.243L6.228 6.228" /></svg>
+            </button>
+          </div>
+        </div>
+        <p id="loginError" class="text-sm text-red-600 hidden">Invalid username or password.</p>
+        <div>
+          <button type="submit" class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-lg font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-all-enhanced">
+            Login
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="appContainer" class="max-w-4xl w-full mx-auto bg-white p-6 sm:p-10 rounded-2xl shadow-lg border border-gray-200 hidden">
+    <div id="mainContent">
+      <div class="text-center mb-10">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-blue-500 mb-2 drop-shadow-sm tracking-tight">
+          Inventory Management System
+        </h1>
+        <p class="text-xl sm:text-2xl font-semibold text-gray-700 mt-2">
+          Upload QC and Invoice Documents
+        </p>
+      </div>
+
+      <form id="mainForm" class="grid md:grid-cols-2 gap-6 md:gap-8 mb-8">
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col text-center shadow-sm">
+          <h3 class="text-lg font-semibold text-gray-800">1. Quality Certificate (QC)</h3>
+          <p class="text-sm text-gray-500 mb-4 h-10">Upload certificate image</p>
+          <input id="qualityCert" type="file" accept="image/*" class="hidden" onchange="showFilePreview('qualityCert', 'qualityCertLabel', 'qualityCertPreview')">
+          <label id="qualityCertLabel" for="qualityCert" class="file-dropzone flex flex-col items-center justify-center flex-grow w-full rounded-lg cursor-pointer transition-all-enhanced relative overflow-hidden aspect-video md:aspect-auto"></label>
+          <div class="mt-3">
+              <label for="qualityCert" class="cursor-pointer text-indigo-600 hover:underline text-sm font-semibold">Choose File</label>
+              <span class="mx-2 text-gray-300">|</span>
+              <button type="button" onclick="captureImage('qualityCert')" class="bg-transparent border-none text-indigo-600 hover:underline p-0 text-sm font-semibold">Use Camera</button>
+          </div>
+          <span id="qualityCertPreview" class="file-preview-text"></span>
+        </div>
+        
+        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col text-center shadow-sm">
+          <h3 class="text-lg font-semibold text-gray-800">2. Invoice Document (IV)</h3>
+          <p class="text-sm text-gray-500 mb-4 h-10">Upload the invoice (PDF/Image)</p>
+          <input id="invoicePdf" type="file" accept=".pdf,image/*" class="hidden" onchange="showFilePreview('invoicePdf', 'invoicePdfLabel', 'invoicePdfPreview')">
+          <label id="invoicePdfLabel" for="invoicePdf" class="file-dropzone flex flex-col items-center justify-center flex-grow w-full rounded-lg cursor-pointer transition-all-enhanced relative overflow-hidden aspect-video md:aspect-auto"></label>
+          <div class="mt-3">
+              <label for="invoicePdf" class="cursor-pointer text-indigo-600 hover:underline text-sm font-semibold">Choose File</label>
+              <span class="mx-2 text-gray-300">|</span>
+              <button type="button" onclick="captureImage('invoicePdf')" class="bg-transparent border-none text-indigo-600 hover:underline p-0 text-sm font-semibold">Use Camera</button>
+          </div>
+          <span id="invoicePdfPreview" class="file-preview-text"></span>
+        </div>
+      </form>
+
+      <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button id="inventoryInBtn" type="button" onclick="uploadAndAct('inventoryIN')" class="w-full inline-flex justify-center items-center px-8 py-3 border border-transparent text-lg font-bold rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed">
+            <span class="btn-text">Inventory IN</span>
+            <span class="btn-spinner hidden ml-2"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>
+        </button>
+        <button id="inventoryOutBtn" type="button" onclick="uploadAndAct('inventoryOUT')" class="w-full inline-flex justify-center items-center px-8 py-3 border border-transparent text-lg font-bold rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed">
+            <span class="btn-text">Inventory OUT</span>
+            <span class="btn-spinner hidden ml-2"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const webhookUrl = "https://ai.senselive.io/webhook-test/senselive-inventory-management-system"; 
+
+    const originalLabelContent = `
+      <div class="flex flex-col items-center justify-center h-full text-gray-400">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+        <span class="text-sm">Click to upload</span>
+      </div>`;
+
+    // --- LOGIN LOGIC ---
+    function handleLogin(event) {
+      event.preventDefault();
+      const usernameInput = document.getElementById('username').value;
+      const passwordInput = document.getElementById('password').value;
+      const errorElement = document.getElementById('loginError');
+      if (usernameInput === 'Senselive' && passwordInput === 'SenseLive@123') {
+        sessionStorage.setItem('isLoggedIn', 'true');
+        showApp();
+        errorElement.classList.add('hidden');
+      } else {
+        errorElement.classList.remove('hidden');
+      }
+    }
+
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('password');
+      const eyeIcon = document.getElementById('eyeIcon');
+      const eyeOffIcon = document.getElementById('eyeOffIcon');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.add('hidden');
+        eyeOffIcon.classList.remove('hidden');
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('hidden');
+        eyeOffIcon.classList.add('hidden');
+      }
+    }
+
+    function showLogin() {
+      document.getElementById('loginContainer').classList.remove('hidden');
+      document.getElementById('appContainer').classList.add('hidden');
+    }
+
+    function showApp() {
+      document.getElementById('loginContainer').classList.add('hidden');
+      document.getElementById('appContainer').classList.remove('hidden');
+    }
+    
+    // --- APP INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem('isLoggedIn') === 'true') {
+        showApp();
+      } else {
+        showLogin();
+      }
+      document.getElementById('loginForm').addEventListener('submit', handleLogin);
+      document.getElementById('inventoryInBtn').disabled = true;
+      document.getElementById('inventoryOutBtn').disabled = true;
+      resetUploaderPreviews();
+    });
+    
+    // --- CORE APP LOGIC ---
+    document.getElementById('mainForm').addEventListener('change', () => {
+      const cert = document.getElementById('qualityCert').files.length > 0;
+      const invoice = document.getElementById('invoicePdf').files.length > 0;
+      const bothFilesSelected = cert && invoice;
+      document.getElementById('inventoryInBtn').disabled = !bothFilesSelected;
+      document.getElementById('inventoryOutBtn').disabled = !bothFilesSelected;
+    });
+
+    async function uploadAndAct(actionType) {
+      const inBtn = document.getElementById('inventoryInBtn');
+      const outBtn = document.getElementById('inventoryOutBtn');
+      const activeBtn = actionType === 'inventoryIN' ? inBtn : outBtn;
+      
+      inBtn.disabled = true;
+      outBtn.disabled = true;
+      activeBtn.querySelector('.btn-spinner').classList.remove('hidden');
+      activeBtn.querySelector('.btn-text').textContent = 'Processing...';
+
+      const formData = new FormData();
+      formData.append("QA", document.getElementById("qualityCert").files[0]);
+      formData.append("IV", document.getElementById("invoicePdf").files[0]);
+      formData.append("action", actionType);
+
+      try {
+        const res = await fetch(webhookUrl, { method: "POST", body: formData });
+        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+        await res.json();
+        
+        alert(`Success! Action '${actionType}' completed.`);
+        resetApp();
+
+      } catch (err) {
+        console.error("Error:", err);
+        alert(`Action failed: ${err.message}. Please check your files and try again.`);
+        // Re-enable buttons on failure so user can retry
+        const cert = document.getElementById('qualityCert').files.length > 0;
+        const invoice = document.getElementById('invoicePdf').files.length > 0;
+        if (cert && invoice) {
+            inBtn.disabled = false;
+            outBtn.disabled = false;
+        }
+      } finally {
+        // Reset the button's appearance
+        activeBtn.querySelector('.btn-spinner').classList.add('hidden');
+        activeBtn.querySelector('.btn-text').textContent = actionType === 'inventoryIN' ? 'Inventory IN' : 'Inventory OUT';
+      }
+    }
+    
+    function resetUploaderPreviews() {
+        ['qualityCert', 'invoicePdf'].forEach(id => {
+            const label = document.getElementById(`${id}Label`);
+            const preview = document.getElementById(`${id}Preview`);
+            if (label) label.innerHTML = originalLabelContent;
+            if (preview) preview.textContent = '';
+        });
+    }
+
+    function resetApp() {
+      document.getElementById("mainForm").reset();
+      document.getElementById('inventoryInBtn').disabled = true;
+      document.getElementById('inventoryOutBtn').disabled = true;
+      resetUploaderPreviews();
+    }
+    
+    function showFilePreview(inputId, labelId, previewId) {
+      const input = document.getElementById(inputId);
+      const label = document.getElementById(labelId);
+      const fileNamePreview = document.getElementById(previewId);
+
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        fileNamePreview.textContent = `${file.name}`;
+
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            label.innerHTML = `<img src="${e.target.result}" alt="Image preview" class="w-full h-full object-cover absolute inset-0 rounded-lg" />`;
+          }
+          reader.readAsDataURL(file);
+        } else {
+          label.innerHTML = `
+            <div class="flex flex-col items-center justify-center h-full text-gray-500 p-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span class="text-sm break-all">${file.name}</span>
+            </div>`;
+        }
+      } else {
+        fileNamePreview.textContent = '';
+        label.innerHTML = originalLabelContent;
+      }
+    }
+
+    function captureImage(targetInputId) {
+      let input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.capture = "environment";
+      input.onchange = e => {
+        let targetInput = document.getElementById(targetInputId);
+        targetInput.files = e.target.files;
+        targetInput.dispatchEvent(new Event('change', { 'bubbles': true }));
+      };
+      input.click();
+    }
+  </script>
+</body>
+</html>
