@@ -202,7 +202,7 @@
       activeBtn.querySelector('.btn-text').textContent = 'Processing...';
 
       const formData = new FormData();
-      formData.append("QA", document.getElementById("qualityCert").files[0]);
+      formData.append("QC", document.getElementById("qualityCert").files[0]);
       formData.append("IV", document.getElementById("invoicePdf").files[0]);
       formData.append("action", actionType);
 
