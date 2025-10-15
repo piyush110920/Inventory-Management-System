@@ -28,6 +28,10 @@
       text-overflow: ellipsis;
       max-width: 100%;
     }
+    /* Styles for the product search dropdown */
+    .product-item:hover {
+        background-color: #f3f4f6; /* bg-gray-100 */
+    }
   </style>
 </head>
 <body class="bg-gray-100 p-4 sm:p-6 min-h-screen flex items-center justify-center font-sans">
@@ -75,37 +79,46 @@
           Inventory Management System
         </h1>
         <p class="text-xl sm:text-2xl font-semibold text-gray-700 mt-2">
-          Upload QC and Invoice Documents
+          Upload Documents & Select Product
         </p>
       </div>
 
-      <form id="mainForm" class="grid md:grid-cols-2 gap-6 md:gap-8 mb-8">
-        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col text-center shadow-sm">
-          <h3 class="text-lg font-semibold text-gray-800">1. Quality Certificate (QC)</h3>
-          <p class="text-sm text-gray-500 mb-4 h-10">Upload certificate image</p>
-          <input id="qualityCert" type="file" accept="image/*" class="hidden" onchange="showFilePreview('qualityCert', 'qualityCertLabel', 'qualityCertPreview')">
-          <label id="qualityCertLabel" for="qualityCert" class="file-dropzone flex flex-col items-center justify-center flex-grow w-full rounded-lg cursor-pointer transition-all-enhanced relative overflow-hidden aspect-video md:aspect-auto"></label>
-          <div class="mt-3">
-              <label for="qualityCert" class="cursor-pointer text-indigo-600 hover:underline text-sm font-semibold">Choose File</label>
-              <span class="mx-2 text-gray-300">|</span>
-              <button type="button" onclick="captureImage('qualityCert')" class="bg-transparent border-none text-indigo-600 hover:underline p-0 text-sm font-semibold">Use Camera</button>
-          </div>
-          <span id="qualityCertPreview" class="file-preview-text"></span>
+      <div id="mainForm" class="space-y-8 mb-8">
+        <div class="grid md:grid-cols-2 gap-6 md:gap-8">
+            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col text-center shadow-sm">
+                <h3 class="text-lg font-semibold text-gray-800">1. Quality Certificate (QC)</h3>
+                <p class="text-sm text-gray-500 mb-4 h-10">Upload certificate image</p>
+                <input id="qualityCert" type="file" accept="image/*" class="hidden">
+                <label id="qualityCertLabel" for="qualityCert" class="file-dropzone flex flex-col items-center justify-center flex-grow w-full rounded-lg cursor-pointer transition-all-enhanced relative overflow-hidden aspect-video md:aspect-auto"></label>
+                <div class="mt-3">
+                    <label for="qualityCert" class="cursor-pointer text-indigo-600 hover:underline text-sm font-semibold">Choose File</label>
+                    <span class="mx-2 text-gray-300">|</span>
+                    <button type="button" onclick="captureImage('qualityCert')" class="bg-transparent border-none text-indigo-600 hover:underline p-0 text-sm font-semibold">Use Camera</button>
+                </div>
+                <span id="qualityCertPreview" class="file-preview-text"></span>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col text-center shadow-sm">
+                <h3 class="text-lg font-semibold text-gray-800">2. Invoice Document (IV)</h3>
+                <p class="text-sm text-gray-500 mb-4 h-10">Upload the invoice (PDF/Image)</p>
+                <input id="invoicePdf" type="file" accept=".pdf,image/*" class="hidden">
+                <label id="invoicePdfLabel" for="invoicePdf" class="file-dropzone flex flex-col items-center justify-center flex-grow w-full rounded-lg cursor-pointer transition-all-enhanced relative overflow-hidden aspect-video md:aspect-auto"></label>
+                <div class="mt-3">
+                    <label for="invoicePdf" class="cursor-pointer text-indigo-600 hover:underline text-sm font-semibold">Choose File</label>
+                    <span class="mx-2 text-gray-300">|</span>
+                    <button type="button" onclick="captureImage('invoicePdf')" class="bg-transparent border-none text-indigo-600 hover:underline p-0 text-sm font-semibold">Use Camera</button>
+                </div>
+                <span id="invoicePdfPreview" class="file-preview-text"></span>
+            </div>
         </div>
-        
-        <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col text-center shadow-sm">
-          <h3 class="text-lg font-semibold text-gray-800">2. Invoice Document (IV)</h3>
-          <p class="text-sm text-gray-500 mb-4 h-10">Upload the invoice (PDF/Image)</p>
-          <input id="invoicePdf" type="file" accept=".pdf,image/*" class="hidden" onchange="showFilePreview('invoicePdf', 'invoicePdfLabel', 'invoicePdfPreview')">
-          <label id="invoicePdfLabel" for="invoicePdf" class="file-dropzone flex flex-col items-center justify-center flex-grow w-full rounded-lg cursor-pointer transition-all-enhanced relative overflow-hidden aspect-video md:aspect-auto"></label>
-          <div class="mt-3">
-              <label for="invoicePdf" class="cursor-pointer text-indigo-600 hover:underline text-sm font-semibold">Choose File</label>
-              <span class="mx-2 text-gray-300">|</span>
-              <button type="button" onclick="captureImage('invoicePdf')" class="bg-transparent border-none text-indigo-600 hover:underline p-0 text-sm font-semibold">Use Camera</button>
-          </div>
-          <span id="invoicePdfPreview" class="file-preview-text"></span>
+
+        <div id="productSelectionContainer" class="relative">
+            <label for="productSearch" class="block text-lg font-semibold text-gray-800 text-center mb-2">3. Select Product</label>
+            <input type="text" id="productSearch" placeholder="Search and select a product..." autocomplete="off" class="w-full p-3 border border-gray-300 text-gray-900 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
+            <input type="hidden" id="selectedProduct">
+            <div id="productList" class="hidden absolute w-full bg-white border mt-1 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
+                </div>
         </div>
-      </form>
+      </div>
 
       <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <button id="inventoryInBtn" type="button" onclick="uploadAndAct('inventoryIN')" class="w-full inline-flex justify-center items-center px-8 py-3 border border-transparent text-lg font-bold rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed">
@@ -122,6 +135,16 @@
 
   <script>
     const webhookUrl = "https://ai.senselive.io/webhook-test/senselive-inventory-management-system"; 
+
+    const productMasterList = [
+        "X5050", "X3050", "X5050D", "X3030", "X5600", "X5070", "X5200", "X6000", 
+        "X6600", "X8400R", "X7400", "X7400D", "X7400A", "X7400E", "X7777", "X7788", 
+        "X7700D", "X7900", "X7800", "X7090", "X7080", "X7050D", "X8550", "X8553", 
+        "X8555", "E7066", "E7566", "E7500", "E7000", "E7575", "E7570", "E6858", 
+        "E7999", "E6888", "E7510D", "E7510A", "E7010D", "E7010A", "S2385H", "S485H", 
+        "2M1S", "S2345", "X6070", "X6050", "X9090", "X9900", "Edge8000", 
+        "SenseBT222", "SenseCT222"
+    ].sort();
 
     const originalLabelContent = `
       <div class="flex flex-col items-center justify-center h-full text-gray-400">
@@ -177,19 +200,32 @@
         showLogin();
       }
       document.getElementById('loginForm').addEventListener('submit', handleLogin);
-      document.getElementById('inventoryInBtn').disabled = true;
-      document.getElementById('inventoryOutBtn').disabled = true;
-      resetUploaderPreviews();
+      
+      // Setup listeners and initial state
+      initializeProductSearch();
+      document.getElementById('qualityCert').addEventListener('change', () => {
+        showFilePreview('qualityCert', 'qualityCertLabel', 'qualityCertPreview');
+        checkFormState();
+      });
+      document.getElementById('invoicePdf').addEventListener('change', () => {
+        showFilePreview('invoicePdf', 'invoicePdfLabel', 'invoicePdfPreview');
+        checkFormState();
+      });
+
+      resetApp();
     });
     
     // --- CORE APP LOGIC ---
-    document.getElementById('mainForm').addEventListener('change', () => {
-      const cert = document.getElementById('qualityCert').files.length > 0;
-      const invoice = document.getElementById('invoicePdf').files.length > 0;
-      const bothFilesSelected = cert && invoice;
-      document.getElementById('inventoryInBtn').disabled = !bothFilesSelected;
-      document.getElementById('inventoryOutBtn').disabled = !bothFilesSelected;
-    });
+    function checkFormState() {
+        const cert = document.getElementById('qualityCert').files.length > 0;
+        const invoice = document.getElementById('invoicePdf').files.length > 0;
+        const product = document.getElementById('selectedProduct').value !== '';
+        
+        const allInputsValid = cert && invoice && product;
+
+        document.getElementById('inventoryInBtn').disabled = !allInputsValid;
+        document.getElementById('inventoryOutBtn').disabled = !allInputsValid;
+    }
 
     async function uploadAndAct(actionType) {
       const inBtn = document.getElementById('inventoryInBtn');
@@ -202,8 +238,9 @@
       activeBtn.querySelector('.btn-text').textContent = 'Processing...';
 
       const formData = new FormData();
-      formData.append("QC", document.getElementById("qualityCert").files[0]);
+      formData.append("QA", document.getElementById("qualityCert").files[0]);
       formData.append("IV", document.getElementById("invoicePdf").files[0]);
+      formData.append("product", document.getElementById("selectedProduct").value);
       formData.append("action", actionType);
 
       try {
@@ -217,13 +254,7 @@
       } catch (err) {
         console.error("Error:", err);
         alert(`Action failed: ${err.message}. Please check your files and try again.`);
-        // Re-enable buttons on failure so user can retry
-        const cert = document.getElementById('qualityCert').files.length > 0;
-        const invoice = document.getElementById('invoicePdf').files.length > 0;
-        if (cert && invoice) {
-            inBtn.disabled = false;
-            outBtn.disabled = false;
-        }
+        checkFormState(); // Re-enable buttons if inputs are still valid
       } finally {
         // Reset the button's appearance
         activeBtn.querySelector('.btn-spinner').classList.add('hidden');
@@ -241,10 +272,17 @@
     }
 
     function resetApp() {
-      document.getElementById("mainForm").reset();
-      document.getElementById('inventoryInBtn').disabled = true;
-      document.getElementById('inventoryOutBtn').disabled = true;
+      document.getElementById('qualityCert').value = '';
+      document.getElementById('invoicePdf').value = '';
+      document.getElementById('productSearch').value = '';
+      document.getElementById('selectedProduct').value = '';
+      
+      checkFormState();
       resetUploaderPreviews();
+      // Ensure dropdown is hidden and filter is reset
+      const productListDiv = document.getElementById('productList');
+      productListDiv.classList.add('hidden');
+      Array.from(productListDiv.children).forEach(item => item.style.display = 'block');
     }
     
     function showFilePreview(inputId, labelId, previewId) {
@@ -288,6 +326,58 @@
         targetInput.dispatchEvent(new Event('change', { 'bubbles': true }));
       };
       input.click();
+    }
+
+    // --- PRODUCT SEARCH LOGIC ---
+    function initializeProductSearch() {
+        const searchInput = document.getElementById('productSearch');
+        const hiddenInput = document.getElementById('selectedProduct');
+        const productListDiv = document.getElementById('productList');
+        const container = document.getElementById('productSelectionContainer');
+
+        // Populate list
+        productMasterList.forEach(product => {
+            const item = document.createElement('div');
+            item.textContent = product;
+            item.className = 'p-2 cursor-pointer product-item';
+            item.onclick = () => {
+                searchInput.value = product;
+                hiddenInput.value = product;
+                productListDiv.classList.add('hidden');
+                checkFormState();
+            };
+            productListDiv.appendChild(item);
+        });
+
+        searchInput.addEventListener('keyup', () => {
+            const filter = searchInput.value.toUpperCase();
+            const items = productListDiv.getElementsByTagName('div');
+            let hasMatch = false;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].textContent.toUpperCase().indexOf(filter) > -1) {
+                    items[i].style.display = "";
+                    hasMatch = true;
+                } else {
+                    items[i].style.display = "none";
+                }
+            }
+            // If the typed text doesn't match any known product, clear selection
+            if(searchInput.value === '' || !productMasterList.includes(searchInput.value)){
+                hiddenInput.value = '';
+            }
+            checkFormState();
+        });
+
+        searchInput.addEventListener('focus', () => {
+            productListDiv.classList.remove('hidden');
+        });
+
+        // Hide dropdown if clicked outside
+        document.addEventListener('click', (event) => {
+            if (!container.contains(event.target)) {
+                productListDiv.classList.add('hidden');
+            }
+        });
     }
   </script>
 </body>
