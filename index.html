@@ -6,6 +6,7 @@
     <title>Inventory Management System</title>
     <link rel="icon" type="image/png" href="./assets/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -85,9 +86,9 @@
                     <h2 class="text-2xl font-bold text-teal-600 dark:text-cyan-400 mb-2">Inventory Management</h2>
                     <p class="text-gray-500 dark:text-gray-400">Perform 'Inventory IN' and 'Inventory OUT' actions.</p>
                 </a>
-                <a href="#" class="block p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 opacity-60 cursor-not-allowed">
+                <a href="#dashboard" data-js="navigate" class="block p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                     <h2 class="text-2xl font-bold text-teal-600 dark:text-cyan-400 mb-2">Inventory Dashboard</h2>
-                    <p class="text-gray-500 dark:text-gray-400">View analytics and reports. (Coming Soon)</p>
+                    <p class="text-gray-500 dark:text-gray-400">View analytics and reports.</p>
                 </a>
             </div>
         </main>
@@ -176,8 +177,7 @@
                 </div>
             </header>
             <p class="mb-6 text-gray-600 dark:text-gray-400">Review the data extracted from the documents. You can make corrections in any field before proceeding.</p>
-            <form id="validationForm" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                </form>
+            <form id="validationForm" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></form>
              <div class="pt-8 mt-8 border-t border-gray-200 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button id="updateBtn" type="button" class="w-full inline-flex justify-center items-center px-8 py-3 border border-transparent text-lg font-bold rounded-lg shadow-sm text-white bg-cyan-600 hover:bg-cyan-700 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed">
                      Update
@@ -188,19 +188,79 @@
             </div>
         </div>
     </div>
+    
+    <div id="dashboard-page" class="hidden w-full p-4 sm:p-6 lg:p-8">
+        <div class="max-w-7xl w-full mx-auto">
+            <header class="flex flex-col sm:flex-row justify-between sm:items-center mb-8 gap-4">
+                <div>
+                    <a href="#landing" data-js="navigate" class="text-sm font-medium text-teal-600 dark:text-cyan-400 hover:underline flex items-center mb-2">
+                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                        Back to Main Menu
+                    </a>
+                    <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-200">Inventory Dashboard</h1>
+                </div>
+                <div class="flex items-center self-end sm:self-center space-x-2">
+                    <button data-js="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 focus:outline-none rounded-lg text-sm p-2.5">
+                        <svg data-js="theme-icon-dark" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                        <svg data-js="theme-icon-light" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.706-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.708.707zm-.708 11.293a1 1 0 010-1.414l.708-.707a1 1 0 111.414 1.414l-.708.707a1 1 0 01-1.414 0zM19 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1z"></path></svg>
+                    </button>
+                    <button data-js="logout" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 focus:outline-none rounded-lg text-sm p-2.5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    </button>
+                </div>
+            </header>
+
+            <div id="dashboard-content" class="grid grid-cols-1 lg:grid-cols-3 gap-6" style="display: none;">
+                <div class="lg:col-span-3 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Product Summary</h2>
+                    <div class="overflow-x-auto">
+                        <table id="summary-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Remaining Stock by Product</h2>
+                    <canvas id="bar-chart"></canvas>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Stock Breakdown</h2>
+                    <select id="product-filter" class="w-full p-2 mb-4 border bg-gray-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-gray-900 dark:text-gray-100"></select>
+                    <canvas id="pie-chart"></canvas>
+                </div>
+            </div>
+            <div id="dashboard-loading" class="text-center py-10 text-gray-600 dark:text-gray-400">Loading Dashboard Data...</div>
+        </div>
+    </div>
 
     <script>
         let originalValidationData = {};
-        // CHANGE 1: Keep track of the original action
         let currentActionType = ''; 
         const WEBHOOK_URL = "https://ai.senselive.io/webhook-test/senselive-inventory-management-system";
+        const SHEET_ID = '1zop-YGn02EyA_Yf5VlcX8bkuFrIAfCoYMIu8A-xErrc';
+        let barChartInstance = null;
+        let pieChartInstance = null;
+        let processedData = [];
 
         document.addEventListener('DOMContentLoaded', () => {
-            const pageContainerIds = ['login-page', 'landing-page', 'inventory-page', 'validation-page']; 
+            const pageContainerIds = ['login-page', 'landing-page', 'inventory-page', 'validation-page', 'dashboard-page']; 
+            
             const showPage = (pageIdToShow) => {
-                pageContainerIds.forEach(id => document.getElementById(id).classList.add('hidden'));
-                document.getElementById(pageIdToShow).classList.remove('hidden');
+                pageContainerIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                });
+                const pageElement = document.getElementById(pageIdToShow);
+                if (pageElement) {
+                    pageElement.classList.remove('hidden');
+                    if (pageIdToShow === 'dashboard-page' && !pageElement.dataset.loaded) {
+                        loadDashboardData();
+                        pageElement.dataset.loaded = 'true';
+                    }
+                }
             };
+            
             const allThemeToggles = document.querySelectorAll('[data-js="theme-toggle"]');
             const allLogos = document.querySelectorAll('[data-js="logo"]');
             const allDarkIcons = document.querySelectorAll('[data-js="theme-icon-dark"]');
@@ -213,15 +273,18 @@
             };
             allThemeToggles.forEach(toggle => {
                 toggle.addEventListener('click', () => {
-                    const isDark = document.documentElement.classList.toggle('dark');
-                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                    document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
                     updateThemeUI();
                 });
             });
             const handleLogout = () => { sessionStorage.removeItem('isLoggedIn'); showPage('login-page'); };
             document.querySelectorAll('[data-js="logout"]').forEach(btn => btn.addEventListener('click', handleLogout));
             document.querySelectorAll('[data-js="navigate"]').forEach(link => {
-                link.addEventListener('click', (e) => { e.preventDefault(); showPage(link.getAttribute('href').substring(1) + '-page'); });
+                link.addEventListener('click', (e) => { 
+                    e.preventDefault(); 
+                    showPage(link.getAttribute('href').substring(1) + '-page');
+                });
             });
             document.getElementById('loginForm').addEventListener('submit', (event) => {
                 event.preventDefault();
@@ -242,12 +305,11 @@
                 validationForm.innerHTML = '';
                 Object.entries(data).forEach(([key, value]) => {
                     const labelText = key.replace(/_/g, ' ');
-                    const fieldHtml = `
+                    validationForm.insertAdjacentHTML('beforeend', `
                         <div class="flex flex-col">
                             <label for="validation-${key}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">${labelText}</label>
-                            <input type="text" id="validation-${key}" name="${key}" value="${value}" class="w-full p-2 border bg-gray-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100 rounded-md focus:ring-cyan-500 focus:border-cyan-500">
-                        </div>`;
-                    validationForm.insertAdjacentHTML('beforeend', fieldHtml);
+                            <input type="text" id="validation-${key}" name="${key}" value="${value || ''}" class="w-full p-2 border bg-gray-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100 rounded-md focus:ring-cyan-500 focus:border-cyan-500">
+                        </div>`);
                 });
                 validationForm.querySelectorAll('input').forEach(input => input.addEventListener('input', checkForChanges));
                 updateBtn.disabled = true;
@@ -255,25 +317,17 @@
             };
             const checkForChanges = () => {
                 let hasChanged = false;
-                validationForm.querySelectorAll('input').forEach(input => { if (input.value !== originalValidationData[input.name]) { hasChanged = true; } });
+                validationForm.querySelectorAll('input').forEach(input => { if (input.value !== (originalValidationData[input.name] || '')) { hasChanged = true; } });
                 updateBtn.disabled = !hasChanged;
             };
-            
             updateBtn.addEventListener('click', async () => {
                 const updatedData = {};
                 validationForm.querySelectorAll('input').forEach(input => { updatedData[input.name] = input.value; });
-                
-                // CHANGE 2: Set the action based on the stored type
                 updatedData.action = currentActionType === 'inventoryIN' ? 'update_in' : 'update_out';
-
                 updateBtn.disabled = true;
                 updateBtn.textContent = 'Updating...';
                 try {
-                   const res = await fetch(WEBHOOK_URL, { 
-                       method: "POST", 
-                       body: JSON.stringify(updatedData), 
-                       headers: {'Content-Type': 'application/json'} 
-                   });
+                   const res = await fetch(WEBHOOK_URL, { method: "POST", body: JSON.stringify(updatedData), headers: {'Content-Type': 'application/json'} });
                    if (!res.ok) throw new Error(`Server error: ${res.status}`);
                    alert('Update Successful!');
                    initializeInventoryPage();
@@ -284,19 +338,130 @@
                    updateBtn.textContent = 'Update';
                 }
             });
-
-            nextBtn.addEventListener('click', () => {
-                initializeInventoryPage();
-                showPage('inventory-page');
-            });
+            nextBtn.addEventListener('click', () => { initializeInventoryPage(); showPage('inventory-page'); });
+            
             if (sessionStorage.getItem('isLoggedIn') === 'true') { showPage('landing-page'); } 
             else { showPage('login-page'); }
             updateThemeUI();
-            window.onInventoryInSuccess = populateValidationForm;
+            window.onActionSuccess = populateValidationForm;
             initializeInventoryPage();
+            
+            document.getElementById('product-filter').addEventListener('change', (e) => {
+                updatePieChart(e.target.value);
+            });
         });
+        
+        async function loadDashboardData() {
+            const contentEl = document.getElementById('dashboard-content');
+            const loadingEl = document.getElementById('dashboard-loading');
+            contentEl.style.display = 'none';
+            loadingEl.style.display = 'block';
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const text = await response.text();
+                const jsonData = JSON.parse(text.substring(47).slice(0, -2));
+                
+                const headers = jsonData.table.cols.map(col => col.label);
+                const productIndex = headers.indexOf('Product');
+                const warrantyIndex = headers.indexOf('Warrenty_Years');
+                if (productIndex === -1) throw new Error('"Product" column not found in Google Sheet.');
+                const productCounts = {};
+                jsonData.table.rows.forEach(row => {
+                    if (row && row.c) {
+                        const productCell = row.c[productIndex];
+                        if (productCell && productCell.v) {
+                            const productName = productCell.v;
+                            if (!productCounts[productName]) productCounts[productName] = { totalIn: 0, remaining: 0 };
+                            productCounts[productName].totalIn++;
+                            const warrantyCell = (warrantyIndex > -1) ? row.c[warrantyIndex] : null;
+                            if (!warrantyCell || !warrantyCell.v) productCounts[productName].remaining++;
+                        }
+                    }
+                });
+                processedData = Object.entries(productCounts).map(([name, counts]) => ({ product: name, totalIn: counts.totalIn, remaining: counts.remaining }));
+                renderSummaryTable();
+                renderBarChart();
+                populateProductFilter();
+                updatePieChart('all');
+                contentEl.style.display = 'grid';
+            } catch (error) {
+                loadingEl.textContent = `Failed to load dashboard data. Error: ${error.message}`;
+            } finally {
+                loadingEl.style.display = 'none';
+            }
+        }
+        
+        function renderSummaryTable() {
+            const tableBody = document.querySelector('#summary-table tbody');
+            const tableHead = document.querySelector('#summary-table thead');
+            tableHead.innerHTML = `<tr><th scope="col" class="px-6 py-3">Product</th><th scope="col" class="px-6 py-3">Total Count In</th><th scope="col" class="px-6 py-3">Count Remaining</th></tr>`;
+            tableBody.innerHTML = '';
+            processedData.forEach(item => {
+                tableBody.insertAdjacentHTML('beforeend', `<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">${item.product}</td>
+                    <td class="px-6 py-4">${item.totalIn}</td><td class="px-6 py-4">${item.remaining}</td></tr>`);
+            });
+        }
 
-        function togglePasswordVisibility() { 
+        function renderBarChart() {
+            const ctx = document.getElementById('bar-chart').getContext('2d');
+            if (barChartInstance) barChartInstance.destroy();
+            barChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: processedData.map(d => d.product),
+                    datasets: [{
+                        label: 'Remaining Stock',
+                        data: processedData.map(d => d.remaining),
+                        backgroundColor: 'rgba(20, 184, 166, 0.7)',
+                        borderColor: 'rgba(15, 118, 110, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            });
+        }
+
+        function populateProductFilter() {
+            const filter = document.getElementById('product-filter');
+            filter.innerHTML = '<option value="all">All Products</option>';
+            processedData.forEach(item => {
+                filter.insertAdjacentHTML('beforeend', `<option value="${item.product}">${item.product}</option>`);
+            });
+        }
+
+        function updatePieChart(selectedProduct) {
+            const ctx = document.getElementById('pie-chart').getContext('2d');
+            let dataToShow = { totalIn: 0, remaining: 0 };
+            if (selectedProduct === 'all') {
+                dataToShow = processedData.reduce((acc, curr) => {
+                    acc.totalIn += curr.totalIn;
+                    acc.remaining += curr.remaining;
+                    return acc;
+                }, { totalIn: 0, remaining: 0 });
+            } else {
+                const found = processedData.find(p => p.product === selectedProduct);
+                if (found) dataToShow = found;
+            }
+            const used = dataToShow.totalIn - dataToShow.remaining;
+            if (pieChartInstance) pieChartInstance.destroy();
+            pieChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Remaining in Stock', 'Used/Allocated'],
+                    datasets: [{
+                        data: [dataToShow.remaining, used],
+                        backgroundColor: ['rgba(20, 184, 166, 0.9)', 'rgba(248, 113, 113, 0.9)'],
+                        borderColor: ['rgba(15, 118, 110, 1)', 'rgba(185, 28, 28, 1)'],
+                        borderWidth: 1
+                    }]
+                }
+            });
+        }
+
+        function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eyeIcon');
             const eyeOffIcon = document.getElementById('eyeOffIcon');
@@ -309,7 +474,7 @@
         
         function initializeInventoryPage() {
             const productMasterList = ["X5050", "X3050", "X5050D", "X3030", "X5600", "X5070", "X5200", "X6000", "X6600", "X8400R", "X7400", "X7400D", "X7400A", "X7400E", "X7777", "X7788", "X7700D", "X7900", "X7800", "X7090", "X7080", "X7050D", "X8550", "X8553", "X8555", "E7066", "E7566", "E7500", "E7000", "E7575", "E7570", "E6858", "E7999", "E6888", "E7510D", "E7510A", "E7010D", "E7010A", "S2385H", "S485H", "2M1S", "S2345", "X6070", "X6050", "X9090", "X9900", "Edge8000", "X9000" ,"SenseBT222", "SenseCT222"].sort();
-            const originalLabelContent = `<div class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg><span class="text-sm">Click to upload</span></div>`;
+            const originalLabelContent = `<div class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg><span class="text-sm">Click to upload</span></div>`;
             const checkFormState = () => {
                 const cert = document.getElementById('qualityCert').files.length > 0;
                 const invoice = document.getElementById('invoicePdf').files.length > 0;
@@ -337,7 +502,7 @@
             const hiddenInput = document.getElementById('selectedProduct');
             const productListDiv = document.getElementById('productList');
             const container = document.getElementById('productSelectionContainer');
-            if(productListDiv.children.length === 0) {
+            if(productListDiv && productListDiv.children.length === 0) {
                 productMasterList.forEach(product => {
                     const item = document.createElement('div');
                     item.textContent = product;
@@ -348,21 +513,21 @@
                     productListDiv.appendChild(item);
                 });
             }
-            searchInput.addEventListener('keyup', () => {
-                const filter = searchInput.value.toUpperCase();
-                Array.from(productListDiv.children).forEach(item => { item.style.display = item.textContent.toUpperCase().includes(filter) ? "" : "none"; });
-                if (!productMasterList.includes(searchInput.value)) { hiddenInput.value = ''; }
-                checkFormState();
-            });
-            searchInput.addEventListener('focus', () => productListDiv.classList.remove('hidden'));
-            document.addEventListener('click', (event) => { if (!container.contains(event.target)) productListDiv.classList.add('hidden'); });
+            if(searchInput) {
+                searchInput.addEventListener('keyup', () => {
+                    const filter = searchInput.value.toUpperCase();
+                    Array.from(productListDiv.children).forEach(item => { item.style.display = item.textContent.toUpperCase().includes(filter) ? "" : "none"; });
+                    if (!productMasterList.includes(searchInput.value)) { hiddenInput.value = ''; }
+                    checkFormState();
+                });
+                searchInput.addEventListener('focus', () => productListDiv.classList.remove('hidden'));
+            }
+            document.addEventListener('click', (event) => { if (container && !container.contains(event.target)) productListDiv.classList.add('hidden'); });
             resetApp();
          }
 
         async function uploadAndAct(actionType) {
-            // CHANGE 3: Store the current action type
             currentActionType = actionType;
-
             const inBtn = document.getElementById('inventoryInBtn');
             const outBtn = document.getElementById('inventoryOutBtn');
             const activeBtn = actionType === 'inventoryIN' ? inBtn : outBtn;
@@ -379,10 +544,8 @@
             try {
                 const res = await fetch(WEBHOOK_URL, { method: "POST", body: formData });
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
-                
                 const responseData = await res.json();
-                window.onInventoryInSuccess(responseData);
-
+                window.onActionSuccess(responseData);
             } catch (err) {
                 console.error("Error:", err);
                 alert(`Action failed: ${err.message}. Please try again.`);
