@@ -365,7 +365,7 @@
                 
                 const headers = jsonData.table.cols.map(col => col.label);
                 const productIndex = headers.indexOf('Product');
-                const warrantyIndex = headers.indexOf('Warrenty_Years');
+                const warrantyIndex = headers.indexOf('Warrenty_date');
                 if (productIndex === -1) throw new Error('"Product" column not found in Google Sheet.');
                 const productCounts = {};
                 jsonData.table.rows.forEach(row => {
