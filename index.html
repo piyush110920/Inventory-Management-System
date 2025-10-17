@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management System</title>
-    <!-- Use a relative path, which is best for a single index.html setup -->
     <link rel="icon" type="image/png" href="./assets/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
-        // Apply theme on initial load to prevent flash of wrong theme
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
@@ -29,9 +27,6 @@
 </head>
 <body class="bg-gray-100 dark:bg-slate-900 min-h-screen font-sans transition-colors duration-300">
 
-    <!-- =================================================================== -->
-    <!-- LOGIN PAGE CONTAINER -->
-    <!-- =================================================================== -->
     <div id="login-page" class="min-h-screen flex flex-col items-center justify-center p-4">
         <button data-js="theme-toggle" type="button" class="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 focus:outline-none rounded-lg text-sm p-2.5">
             <svg data-js="theme-icon-dark" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
@@ -39,8 +34,8 @@
         </button>
         <div class="max-w-md w-full mx-auto">
             <div class="text-center mb-8">
-                <img data-js="logo" src="./assets/logo-light.png" alt="SenseLive Logo" class="mx-auto h-15 w-auto mb-6">
-                <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-500 drop-shadow-sm tracking-tight">Inventory System</h1>
+                <img data-js="logo" src="./assets/logo-light.png" alt="SenseLive Logo" class="mx-auto h-12 sm:h-16 w-auto mb-6">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-500 drop-shadow-sm tracking-tight">Inventory System</h1>
                 <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mt-4">Welcome Back</h2>
                 <p class="text-md text-gray-500 dark:text-gray-400 mt-2">Please login with your credentials.</p>
             </div>
@@ -67,13 +62,10 @@
         </div>
     </div>
 
-    <!-- =================================================================== -->
-    <!-- LANDING PAGE CONTAINER -->
-    <!-- =================================================================== -->
     <div id="landing-page" class="hidden min-h-screen w-full flex flex-col items-center justify-center p-4">
         <header class="w-full max-w-5xl mx-auto absolute top-0 left-0 right-0 px-4 py-5">
             <div class="flex justify-between items-center">
-                 <img data-js="logo" src="./assets/logo-light.png" alt="SenseLive Logo" class="h-14 w-auto">
+                 <img data-js="logo" src="./assets/logo-light.png" alt="SenseLive Logo" class="h-10 sm:h-12 w-auto">
                  <div class="flex items-center space-x-2">
                     <button data-js="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 focus:outline-none rounded-lg text-sm p-2.5">
                         <svg data-js="theme-icon-dark" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
@@ -86,8 +78,8 @@
             </div>
         </header>
         <main class="text-center">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 dark:text-gray-200 mb-4">Welcome to SenseLive</h1>
-            <p class="text-xl text-gray-600 dark:text-gray-400 mb-12">What would you like to do today?</p>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-800 dark:text-gray-200 mb-4">Welcome to SenseLive</h1>
+            <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-12">What would you like to do today?</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
                 <a href="#inventory" data-js="navigate" class="block p-8 bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
                     <h2 class="text-2xl font-bold text-teal-600 dark:text-cyan-400 mb-2">Inventory Management</h2>
@@ -101,9 +93,6 @@
         </main>
     </div>
 
-    <!-- =================================================================== -->
-    <!-- INVENTORY PAGE CONTAINER -->
-    <!-- =================================================================== -->
     <div id="inventory-page" class="hidden w-full flex items-center justify-center p-4 sm:p-6">
         <div class="max-w-4xl w-full mx-auto bg-white dark:bg-slate-800 p-6 sm:p-10 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
             <header class="flex justify-between items-center mb-10">
@@ -122,8 +111,8 @@
                 </div>
             </header>
             <div class="text-center mb-10">
-                <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-500 mb-2 drop-shadow-sm tracking-tight">Inventory Management</h1>
-                <p class="text-xl sm:text-2xl font-semibold text-gray-700 dark:text-gray-300 mt-2">Upload Documents & Select Product</p>
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-500 mb-2 drop-shadow-sm tracking-tight">Inventory Management</h1>
+                <p class="text-lg sm:text-xl font-semibold text-gray-700 dark:text-gray-300 mt-2">Upload Documents & Select Product</p>
             </div>
             <div id="mainForm" class="space-y-8 mb-8">
                 <div class="grid md:grid-cols-2 gap-6 md:gap-8">
@@ -131,7 +120,7 @@
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">1. Quality Certificate (QC)</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 h-10">Upload certificate image</p>
                         <input id="qualityCert" type="file" accept="image/*" class="hidden">
-                        <label id="qualityCertLabel" for="qualityCert" class="file-dropzone flex flex-col items-center justify-center flex-grow w-full rounded-lg cursor-pointer transition-all-enhanced relative overflow-hidden aspect-video md:aspect-auto"></label>
+                        <label id="qualityCertLabel" for="qualityCert" class="file-dropzone flex flex-col items-center justify-center flex-grow w-full rounded-lg cursor-pointer transition-all-enhanced relative overflow-hidden aspect-square sm:aspect-video md:aspect-auto"></label>
                         <div class="mt-3">
                             <label for="qualityCert" class="cursor-pointer text-teal-600 dark:text-cyan-400 hover:underline text-sm font-semibold">Choose File</label>
                             <span class="mx-2 text-gray-300 dark:text-gray-600">|</span>
@@ -143,7 +132,7 @@
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">2. Invoice Document (IV)</h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 h-10">Upload the invoice (PDF/Image)</p>
                         <input id="invoicePdf" type="file" accept=".pdf,image/*" class="hidden">
-                        <label id="invoicePdfLabel" for="invoicePdf" class="file-dropzone flex flex-col items-center justify-center flex-grow w-full rounded-lg cursor-pointer transition-all-enhanced relative overflow-hidden aspect-video md:aspect-auto"></label>
+                        <label id="invoicePdfLabel" for="invoicePdf" class="file-dropzone flex flex-col items-center justify-center flex-grow w-full rounded-lg cursor-pointer transition-all-enhanced relative overflow-hidden aspect-square sm:aspect-video md:aspect-auto"></label>
                         <div class="mt-3">
                             <label for="invoicePdf" class="cursor-pointer text-teal-600 dark:text-cyan-400 hover:underline text-sm font-semibold">Choose File</label>
                             <span class="mx-2 text-gray-300 dark:text-gray-600">|</span>
@@ -172,9 +161,6 @@
         </div>
     </div>
 
-    <!-- =================================================================== -->
-    <!-- JAVASCRIPT LOGIC -->
-    <!-- =================================================================== -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // --- GLOBAL APP INITIALIZATION ---
@@ -274,7 +260,7 @@
         function initializeInventoryPage() {
             const webhookUrl = "https://ai.senselive.io/webhook-test/senselive-inventory-management-system"; 
             const productMasterList = ["X5050", "X3050", "X5050D", "X3030", "X5600", "X5070", "X5200", "X6000", "X6600", "X8400R", "X7400", "X7400D", "X7400A", "X7400E", "X7777", "X7788", "X7700D", "X7900", "X7800", "X7090", "X7080", "X7050D", "X8550", "X8553", "X8555", "E7066", "E7566", "E7500", "E7000", "E7575", "E7570", "E6858", "E7999", "E6888", "E7510D", "E7510A", "E7010D", "E7010A", "S2385H", "S485H", "2M1S", "S2345", "X6070", "X6050", "X9090", "X9900", "Edge8000", "X9000" ,"SenseBT222", "SenseCT222"].sort();
-            const originalLabelContent = `<div class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg><span class="text-sm">Click to upload</span></div>`;
+            const originalLabelContent = `<div class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg><span class="text-sm">Click to upload</span></div>`;
 
             const checkFormState = () => {
                 const cert = document.getElementById('qualityCert').files.length > 0;
