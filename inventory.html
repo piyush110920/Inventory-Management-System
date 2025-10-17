@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management</title>
-    <link rel="icon" type="image/png" href="./assets/favicon.png">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
@@ -15,6 +15,7 @@
         }
     </script>
     <style>
+        /* CSS styles remain the same */
         .transition-all-enhanced { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .file-dropzone { border: 2px dashed #d1d5db; }
         .dark .file-dropzone { border-color: #4b5563; }
@@ -80,6 +81,7 @@
                     <span id="invoicePdfPreview" class="file-preview-text text-gray-600 dark:text-gray-400"></span>
                 </div>
             </div>
+
             <div id="productSelectionContainer" class="relative">
                 <label for="productSearch" class="block text-lg font-semibold text-gray-800 dark:text-gray-200 text-center mb-2">3. Select Product</label>
                 <input type="text" id="productSearch" placeholder="Search and select a product..." autocomplete="off" class="w-full p-3 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-700 rounded-md focus:ring-cyan-500 focus:border-cyan-500">
@@ -87,6 +89,7 @@
                 <div id="productList" class="hidden absolute w-full bg-white dark:bg-slate-700 border dark:border-slate-600 mt-1 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10 text-gray-800 dark:text-gray-200"></div>
             </div>
         </div>
+        
         <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <button id="inventoryInBtn" type="button" onclick="uploadAndAct('inventoryIN')" class="w-full inline-flex justify-center items-center px-8 py-3 border border-transparent text-lg font-bold rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed">
                 <span class="btn-text">Inventory IN</span>
@@ -100,7 +103,6 @@
     </div>
 
     <script>
-        // ... (The entire inventory management script from the previous step) ...
         const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
         const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 
@@ -123,8 +125,7 @@
             }
             updateThemeIcons();
         });
-
-        // Logout function
+        
         function handleLogout() {
             sessionStorage.removeItem('isLoggedIn');
             window.location.href = 'login.html';
@@ -140,7 +141,6 @@
                 return;
             }
             updateThemeIcons();
-            // Attach listener for the logout button
             document.getElementById('logoutBtn').addEventListener('click', handleLogout);
 
             initializeProductSearch();
@@ -149,6 +149,7 @@
             resetApp();
         });
         
+        // ... The rest of your inventory functions (checkFormState, uploadAndAct, etc.) remain the same ...
         function checkFormState() {
             const cert = document.getElementById('qualityCert').files.length > 0;
             const invoice = document.getElementById('invoicePdf').files.length > 0;

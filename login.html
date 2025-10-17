@@ -4,14 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Inventory Management</title>
-    <link rel="icon" type="image/png" href="./assets/favicon.png">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Set up Tailwind CSS dark mode
-        tailwind.config = {
-            darkMode: 'class',
-        }
-        // Apply theme immediately to prevent flashing
+        tailwind.config = { darkMode: 'class' }
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
@@ -28,7 +24,7 @@
     
     <div class="max-w-md w-full mx-auto">
         <div class="text-center mb-8">
-            <img id="main-logo" src="./assets/logo-light.png" alt="SenseLive Logo" class="mx-auto h-20 w-auto mb-6">
+            <img id="main-logo" src="/assets/logo-light.png" alt="SenseLive Logo" class="mx-auto h-12 w-auto mb-6">
             <h1 class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-500 drop-shadow-sm tracking-tight">
                 Inventory System
             </h1>
@@ -70,11 +66,11 @@
         function updateLogo() {
             const mainLogo = document.getElementById('main-logo');
             if (document.documentElement.classList.contains('dark')) {
-                mainLogo.src = './assets/logo-dark.png';
+                mainLogo.src = '/assets/logo-dark.png'; // Change
                 themeToggleLightIcon.classList.remove('hidden');
                 themeToggleDarkIcon.classList.add('hidden');
             } else {
-                mainLogo.src = './assets/logo-light.png';
+                mainLogo.src = '/assets/logo-light.png'; // Change
                 themeToggleDarkIcon.classList.remove('hidden');
                 themeToggleLightIcon.classList.add('hidden');
             }

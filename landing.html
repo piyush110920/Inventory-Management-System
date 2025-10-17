@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Inventory Management</title>
-    <link rel="icon" type="image/png" href="./assets/favicon.png">
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' };
@@ -19,7 +19,7 @@
 
     <header class="w-full max-w-5xl mx-auto absolute top-0 left-0 right-0 px-4 py-5">
         <div class="flex justify-between items-center">
-             <img id="main-logo" src="./assets/logo-light.png" alt="SenseLive Logo" class="h-14 w-auto">
+             <img id="main-logo" src="/assets/logo-light.png" alt="SenseLive Logo" class="h-8 w-auto">
              <div class="flex items-center space-x-2">
                 <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700 focus:outline-none rounded-lg text-sm p-2.5">
                     <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
@@ -53,7 +53,6 @@
                 window.location.href = 'login.html';
             }
             updateLogo();
-            // Attach listener for the logout button
             document.getElementById('logoutBtn').addEventListener('click', handleLogout);
         });
 
@@ -63,11 +62,11 @@
         function updateLogo() {
             const mainLogo = document.getElementById('main-logo');
             if (document.documentElement.classList.contains('dark')) {
-                mainLogo.src = './assets/logo-dark.png';
+                mainLogo.src = '/assets/logo-dark.png'; // Change
                 themeToggleLightIcon.classList.remove('hidden');
                 themeToggleDarkIcon.classList.add('hidden');
             } else {
-                mainLogo.src = './assets/logo-light.png';
+                mainLogo.src = '/assets/logo-light.png'; // Change
                 themeToggleDarkIcon.classList.remove('hidden');
                 themeToggleLightIcon.classList.add('hidden');
             }
@@ -83,7 +82,6 @@
             updateLogo();
         });
 
-        // Logout function
         function handleLogout() {
             sessionStorage.removeItem('isLoggedIn');
             window.location.href = 'login.html';
