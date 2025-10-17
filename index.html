@@ -96,7 +96,7 @@
     <div id="inventory-page" class="hidden w-full flex items-center justify-center p-4 sm:p-6">
         <div class="max-w-4xl w-full mx-auto bg-white dark:bg-slate-800 p-6 sm:p-10 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
             <header class="flex justify-between items-center mb-10">
-                <a href="#landing" data-js="navigate" class="text-sm font-medium text-teal-600 dark:text-cyan-400 hover:underline flex items-center">
+                 <a href="#landing" data-js="navigate" class="text-sm font-medium text-teal-600 dark:text-cyan-400 hover:underline flex items-center">
                     <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
                     Back to Dashboard
                 </a>
@@ -114,7 +114,7 @@
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-teal-500 to-cyan-500 mb-2 drop-shadow-sm tracking-tight">Inventory Management</h1>
                 <p class="text-lg sm:text-xl font-semibold text-gray-700 dark:text-gray-300 mt-2">Upload Documents & Select Product</p>
             </div>
-            <div id="mainForm" class="space-y-8 mb-8">
+            <form id="mainForm" class="space-y-8 mb-8">
                 <div class="grid md:grid-cols-2 gap-6 md:gap-8">
                     <div class="bg-gray-50 dark:bg-slate-900/50 p-6 rounded-xl border border-gray-200 dark:border-slate-700 flex flex-col text-center shadow-sm">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">1. Quality Certificate (QC)</h3>
@@ -147,8 +147,7 @@
                     <input type="hidden" id="selectedProduct">
                     <div id="productList" class="hidden absolute w-full bg-white dark:bg-slate-700 border dark:border-slate-600 mt-1 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10 text-gray-800 dark:text-gray-200"></div>
                 </div>
-            </div>
-            <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            </form> <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button id="inventoryInBtn" type="button" onclick="uploadAndAct('inventoryIN')" class="w-full inline-flex justify-center items-center px-8 py-3 border border-transparent text-lg font-bold rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed">
                     <span class="btn-text">Inventory IN</span>
                     <span class="btn-spinner hidden ml-2"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>
@@ -189,32 +188,26 @@
         </div>
     </div>
 
-
     <script>
-        // Store original data to check for changes
         let originalValidationData = {};
+        const WEBHOOK_URL = "https://ai.senselive.io/webhook-test/senselive-inventory-management-system";
 
         document.addEventListener('DOMContentLoaded', () => {
-            const pageContainerIds = ['login-page', 'landing-page', 'inventory-page', 'validation-page']; // Add validation page
-            
+            const pageContainerIds = ['login-page', 'landing-page', 'inventory-page', 'validation-page']; 
             const showPage = (pageIdToShow) => {
                 pageContainerIds.forEach(id => document.getElementById(id).classList.add('hidden'));
                 document.getElementById(pageIdToShow).classList.remove('hidden');
             };
-
-            // --- THEME & LOGO MANAGEMENT ---
             const allThemeToggles = document.querySelectorAll('[data-js="theme-toggle"]');
             const allLogos = document.querySelectorAll('[data-js="logo"]');
             const allDarkIcons = document.querySelectorAll('[data-js="theme-icon-dark"]');
             const allLightIcons = document.querySelectorAll('[data-js="theme-icon-light"]');
-
             const updateThemeUI = () => {
                 const isDark = document.documentElement.classList.contains('dark');
                 allLogos.forEach(logo => { logo.src = isDark ? './assets/logo-dark.png' : './assets/logo-light.png'; });
                 allDarkIcons.forEach(icon => isDark ? icon.classList.add('hidden') : icon.classList.remove('hidden'));
                 allLightIcons.forEach(icon => isDark ? icon.classList.remove('hidden') : icon.classList.add('hidden'));
             };
-
             allThemeToggles.forEach(toggle => {
                 toggle.addEventListener('click', () => {
                     const isDark = document.documentElement.classList.toggle('dark');
@@ -222,15 +215,10 @@
                     updateThemeUI();
                 });
             });
-
-            // --- NAVIGATION, LOGIN & LOGOUT ---
             const handleLogout = () => { sessionStorage.removeItem('isLoggedIn'); showPage('login-page'); };
             document.querySelectorAll('[data-js="logout"]').forEach(btn => btn.addEventListener('click', handleLogout));
             document.querySelectorAll('[data-js="navigate"]').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showPage(link.getAttribute('href').substring(1) + '-page');
-                });
+                link.addEventListener('click', (e) => { e.preventDefault(); showPage(link.getAttribute('href').substring(1) + '-page'); });
             });
             document.getElementById('loginForm').addEventListener('submit', (event) => {
                 event.preventDefault();
@@ -238,120 +226,87 @@
                 const password = document.getElementById('password').value;
                 const errorEl = document.getElementById('loginError');
                 if (username === 'Senselive' && password === 'SenseLive@123') {
-                    sessionStorage.setItem('isLoggedIn', 'true');
-                    errorEl.classList.add('hidden');
-                    showPage('landing-page');
+                    sessionStorage.setItem('isLoggedIn', 'true'); errorEl.classList.add('hidden'); showPage('landing-page');
                 } else {
                     errorEl.classList.remove('hidden');
                 }
             });
-
-            // --- VALIDATION PAGE LOGIC ---
             const validationForm = document.getElementById('validationForm');
             const updateBtn = document.getElementById('updateBtn');
             const nextBtn = document.getElementById('nextBtn');
-            
             const populateValidationForm = (data) => {
-                originalValidationData = data; // Store original data
-                validationForm.innerHTML = ''; // Clear previous form
+                originalValidationData = data;
+                validationForm.innerHTML = '';
                 Object.entries(data).forEach(([key, value]) => {
                     const labelText = key.replace(/_/g, ' ');
                     const fieldHtml = `
                         <div class="flex flex-col">
                             <label for="validation-${key}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">${labelText}</label>
                             <input type="text" id="validation-${key}" name="${key}" value="${value}" class="w-full p-2 border bg-gray-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-gray-100 rounded-md focus:ring-cyan-500 focus:border-cyan-500">
-                        </div>
-                    `;
+                        </div>`;
                     validationForm.insertAdjacentHTML('beforeend', fieldHtml);
                 });
-                
-                // Add event listeners to check for changes
-                validationForm.querySelectorAll('input').forEach(input => {
-                    input.addEventListener('input', checkForChanges);
-                });
-
-                updateBtn.disabled = true; // Disable button initially
+                validationForm.querySelectorAll('input').forEach(input => input.addEventListener('input', checkForChanges));
+                updateBtn.disabled = true;
                 showPage('validation-page');
             };
-
             const checkForChanges = () => {
                 let hasChanged = false;
-                validationForm.querySelectorAll('input').forEach(input => {
-                    const key = input.name;
-                    if (input.value !== originalValidationData[key]) {
-                        hasChanged = true;
-                    }
-                });
+                validationForm.querySelectorAll('input').forEach(input => { if (input.value !== originalValidationData[input.name]) { hasChanged = true; } });
                 updateBtn.disabled = !hasChanged;
             };
-
+            
+            // FIX 2: Activate the fetch call
             updateBtn.addEventListener('click', async () => {
                 const updatedData = {};
-                validationForm.querySelectorAll('input').forEach(input => {
-                    updatedData[input.name] = input.value;
-                });
-                updatedData.action = 'update'; // Add the update action
+                validationForm.querySelectorAll('input').forEach(input => { updatedData[input.name] = input.value; });
+                updatedData.action = 'update';
 
-                alert(`SENDING UPDATED DATA TO WEBHOOK:\n${JSON.stringify(updatedData, null, 2)}`);
-                // This is where you would make the fetch call with the updated data
-                // For now, we just simulate success and navigate
-                
-                // --- Replace alert above with a real fetch call in production ---
-                // try {
-                //    const res = await fetch("WEBHOOK_URL", { method: "POST", body: JSON.stringify(updatedData), headers: {'Content-Type': 'application/json'} });
-                //    if (!res.ok) throw new Error(`Server error: ${res.status}`);
-                //    alert('Update Successful!');
-                // } catch (err) {
-                //    alert(`Update failed: ${err.message}`);
-                // } finally {
-                //    initializeInventoryPage();
-                //    showPage('inventory-page');
-                // }
-                
-                // Simulate success for now
-                initializeInventoryPage();
-                showPage('inventory-page');
+                updateBtn.disabled = true; // Prevent multiple clicks
+                updateBtn.textContent = 'Updating...';
+
+                try {
+                   const res = await fetch(WEBHOOK_URL, { 
+                       method: "POST", 
+                       body: JSON.stringify(updatedData), 
+                       headers: {'Content-Type': 'application/json'} 
+                   });
+                   if (!res.ok) throw new Error(`Server error: ${res.status}`);
+                   alert('Update Successful!');
+                   initializeInventoryPage();
+                   showPage('inventory-page');
+                } catch (err) {
+                   alert(`Update failed: ${err.message}`);
+                } finally {
+                   updateBtn.textContent = 'Update'; // Reset button text
+                }
             });
 
             nextBtn.addEventListener('click', () => {
                 initializeInventoryPage();
                 showPage('inventory-page');
             });
-
-
-            // --- INITIAL PAGE LOAD ---
-            if (sessionStorage.getItem('isLoggedIn') === 'true') {
-                showPage('landing-page');
-            } else {
-                showPage('login-page');
-            }
+            if (sessionStorage.getItem('isLoggedIn') === 'true') { showPage('landing-page'); } 
+            else { showPage('login-page'); }
             updateThemeUI();
-            
-            // Link the global upload function to the validation logic
             window.onInventoryInSuccess = populateValidationForm;
             initializeInventoryPage();
         });
 
-        // --- GLOBAL FUNCTIONS (accessible via onclick) ---
         function togglePasswordVisibility() { /* ... same as before ... */ 
-             const passwordInput = document.getElementById('password');
+            const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eyeIcon');
             const eyeOffIcon = document.getElementById('eyeOffIcon');
             if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.classList.add('hidden');
-                eyeOffIcon.classList.remove('hidden');
+                passwordInput.type = 'text'; eyeIcon.classList.add('hidden'); eyeOffIcon.classList.remove('hidden');
             } else {
-                passwordInput.type = 'password';
-                eyeIcon.classList.remove('hidden');
-                eyeOffIcon.classList.add('hidden');
+                passwordInput.type = 'password'; eyeIcon.classList.remove('hidden'); eyeOffIcon.classList.add('hidden');
             }
         }
         
-        function initializeInventoryPage() { /* ... same setup as before ... */
+        function initializeInventoryPage() {
             const productMasterList = ["X5050", "X3050", "X5050D", "X3030", "X5600", "X5070", "X5200", "X6000", "X6600", "X8400R", "X7400", "X7400D", "X7400A", "X7400E", "X7777", "X7788", "X7700D", "X7900", "X7800", "X7090", "X7080", "X7050D", "X8550", "X8553", "X8555", "E7066", "E7566", "E7500", "E7000", "E7575", "E7570", "E6858", "E7999", "E6888", "E7510D", "E7510A", "E7010D", "E7010A", "S2385H", "S485H", "2M1S", "S2345", "X6070", "X6050", "X9090", "X9900", "Edge8000", "X9000" ,"SenseBT222", "SenseCT222"].sort();
             const originalLabelContent = `<div class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg><span class="text-sm">Click to upload</span></div>`;
-
             const checkFormState = () => {
                 const cert = document.getElementById('qualityCert').files.length > 0;
                 const invoice = document.getElementById('invoicePdf').files.length > 0;
@@ -385,10 +340,7 @@
                 item.textContent = product;
                 item.className = 'p-2 cursor-pointer product-item';
                 item.onclick = () => {
-                    searchInput.value = product;
-                    hiddenInput.value = product;
-                    productListDiv.classList.add('hidden');
-                    checkFormState();
+                    searchInput.value = product; hiddenInput.value = product; productListDiv.classList.add('hidden'); checkFormState();
                 };
                 productListDiv.appendChild(item);
             });
@@ -404,7 +356,6 @@
          }
 
         async function uploadAndAct(actionType) {
-            const webhookUrl = "https://ai.senselive.io/webhook-test/senselive-inventory-management-system";
             const inBtn = document.getElementById('inventoryInBtn');
             const outBtn = document.getElementById('inventoryOutBtn');
             const activeBtn = actionType === 'inventoryIN' ? inBtn : outBtn;
@@ -419,32 +370,13 @@
             formData.append("action", actionType);
 
             try {
-                // This fetch is for the initial upload
-                const res = await fetch(webhookUrl, { method: "POST", body: formData });
+                const res = await fetch(WEBHOOK_URL, { method: "POST", body: formData });
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
                 
                 if (actionType === 'inventoryIN') {
-                    // *** SIMULATION: In production, you would use await res.json(); ***
-                    // We are creating fake response data here for demonstration.
-                    const dummyDataFromWebhook = {
-                        "Product": document.getElementById('selectedProduct').value,
-                        "MAC Address": "A1:B2:C3:D4:E5:F6",
-                        "Model Number": "X7400D",
-                        "Configuration Code": "XYZ-123",
-                        "IP": "192.168.1.100",
-                        "Password": "admin",
-                        "Time Stamp IN": new Date().toISOString(),
-                        "QC Product Link IN": "https://example.com/qc/link1.jpg",
-                        "Invoice Link IN": "https://example.com/iv/link1.pdf",
-                        "Price": "1250.75",
-                        "Invoice Number": "INV-2025-001",
-                        "Purchase Order Number": "PO-9876",
-                        "Company Name": "Example Corp",
-                        "Invoice Date": "2025-10-17"
-                    };
-                    window.onInventoryInSuccess(dummyDataFromWebhook);
+                    const responseData = await res.json();
+                    window.onInventoryInSuccess(responseData);
                 } else {
-                    // For 'inventoryOUT', just show success and reset
                     alert(`Success! Action '${actionType}' completed.`);
                     initializeInventoryPage();
                 }
@@ -452,7 +384,7 @@
             } catch (err) {
                 console.error("Error:", err);
                 alert(`Action failed: ${err.message}. Please try again.`);
-                checkFormState(); // Re-check to potentially re-enable buttons
+                initializeInventoryPage(); // Reset on failure
             } finally {
                 activeBtn.querySelector('.btn-spinner').classList.add('hidden');
                 activeBtn.querySelector('.btn-text').textContent = actionType === 'inventoryIN' ? 'Inventory IN' : 'Inventory OUT';
