@@ -147,7 +147,8 @@
                     <input type="hidden" id="selectedProduct">
                     <div id="productList" class="hidden absolute w-full bg-white dark:bg-slate-700 border dark:border-slate-600 mt-1 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10 text-gray-800 dark:text-gray-200"></div>
                 </div>
-            </form> <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            </form> 
+            <div class="pt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button id="inventoryInBtn" type="button" onclick="uploadAndAct('inventoryIN')" class="w-full inline-flex justify-center items-center px-8 py-3 border border-transparent text-lg font-bold rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed">
                     <span class="btn-text">Inventory IN</span>
                     <span class="btn-spinner hidden ml-2"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>
@@ -256,15 +257,12 @@
                 updateBtn.disabled = !hasChanged;
             };
             
-            // FIX 2: Activate the fetch call
             updateBtn.addEventListener('click', async () => {
                 const updatedData = {};
                 validationForm.querySelectorAll('input').forEach(input => { updatedData[input.name] = input.value; });
                 updatedData.action = 'update';
-
-                updateBtn.disabled = true; // Prevent multiple clicks
+                updateBtn.disabled = true;
                 updateBtn.textContent = 'Updating...';
-
                 try {
                    const res = await fetch(WEBHOOK_URL, { 
                        method: "POST", 
@@ -278,7 +276,7 @@
                 } catch (err) {
                    alert(`Update failed: ${err.message}`);
                 } finally {
-                   updateBtn.textContent = 'Update'; // Reset button text
+                   updateBtn.textContent = 'Update';
                 }
             });
 
@@ -293,7 +291,7 @@
             initializeInventoryPage();
         });
 
-        function togglePasswordVisibility() { /* ... same as before ... */ 
+        function togglePasswordVisibility() { 
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eyeIcon');
             const eyeOffIcon = document.getElementById('eyeOffIcon');
@@ -334,16 +332,17 @@
             const hiddenInput = document.getElementById('selectedProduct');
             const productListDiv = document.getElementById('productList');
             const container = document.getElementById('productSelectionContainer');
-            productListDiv.innerHTML = '';
-            productMasterList.forEach(product => {
-                const item = document.createElement('div');
-                item.textContent = product;
-                item.className = 'p-2 cursor-pointer product-item';
-                item.onclick = () => {
-                    searchInput.value = product; hiddenInput.value = product; productListDiv.classList.add('hidden'); checkFormState();
-                };
-                productListDiv.appendChild(item);
-            });
+            if(productListDiv.children.length === 0) { // Only populate product list once
+                productMasterList.forEach(product => {
+                    const item = document.createElement('div');
+                    item.textContent = product;
+                    item.className = 'p-2 cursor-pointer product-item';
+                    item.onclick = () => {
+                        searchInput.value = product; hiddenInput.value = product; productListDiv.classList.add('hidden'); checkFormState();
+                    };
+                    productListDiv.appendChild(item);
+                });
+            }
             searchInput.addEventListener('keyup', () => {
                 const filter = searchInput.value.toUpperCase();
                 Array.from(productListDiv.children).forEach(item => { item.style.display = item.textContent.toUpperCase().includes(filter) ? "" : "none"; });
@@ -373,25 +372,21 @@
                 const res = await fetch(WEBHOOK_URL, { method: "POST", body: formData });
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
                 
-                if (actionType === 'inventoryIN') {
-                    const responseData = await res.json();
-                    window.onInventoryInSuccess(responseData);
-                } else {
-                    alert(`Success! Action '${actionType}' completed.`);
-                    initializeInventoryPage();
-                }
+                // CHANGE: This now handles both IN and OUT responses
+                const responseData = await res.json();
+                window.onInventoryInSuccess(responseData);
 
             } catch (err) {
                 console.error("Error:", err);
                 alert(`Action failed: ${err.message}. Please try again.`);
-                initializeInventoryPage(); // Reset on failure
+                initializeInventoryPage(); 
             } finally {
                 activeBtn.querySelector('.btn-spinner').classList.add('hidden');
                 activeBtn.querySelector('.btn-text').textContent = actionType === 'inventoryIN' ? 'Inventory IN' : 'Inventory OUT';
             }
         }
 
-        function showFilePreview(inputId, labelId, previewId) { /* ... same as before ... */
+        function showFilePreview(inputId, labelId, previewId) { 
             const input = document.getElementById(inputId);
             const label = document.getElementById(labelId);
             const fileNamePreview = document.getElementById(previewId);
@@ -408,7 +403,7 @@
             }
          }
 
-        function captureImage(targetInputId) { /* ... same as before ... */ 
+        function captureImage(targetInputId) {
             const tempInput = document.createElement("input");
             tempInput.type = "file";
             tempInput.accept = "image/*";
