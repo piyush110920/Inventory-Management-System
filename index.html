@@ -191,6 +191,8 @@
 
     <script>
         let originalValidationData = {};
+        // CHANGE 1: Keep track of the original action
+        let currentActionType = ''; 
         const WEBHOOK_URL = "https://ai.senselive.io/webhook-test/senselive-inventory-management-system";
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -260,7 +262,10 @@
             updateBtn.addEventListener('click', async () => {
                 const updatedData = {};
                 validationForm.querySelectorAll('input').forEach(input => { updatedData[input.name] = input.value; });
-                updatedData.action = 'update';
+                
+                // CHANGE 2: Set the action based on the stored type
+                updatedData.action = currentActionType === 'inventoryIN' ? 'update_in' : 'update_out';
+
                 updateBtn.disabled = true;
                 updateBtn.textContent = 'Updating...';
                 try {
@@ -304,7 +309,7 @@
         
         function initializeInventoryPage() {
             const productMasterList = ["X5050", "X3050", "X5050D", "X3030", "X5600", "X5070", "X5200", "X6000", "X6600", "X8400R", "X7400", "X7400D", "X7400A", "X7400E", "X7777", "X7788", "X7700D", "X7900", "X7800", "X7090", "X7080", "X7050D", "X8550", "X8553", "X8555", "E7066", "E7566", "E7500", "E7000", "E7575", "E7570", "E6858", "E7999", "E6888", "E7510D", "E7510A", "E7010D", "E7010A", "S2385H", "S485H", "2M1S", "S2345", "X6070", "X6050", "X9090", "X9900", "Edge8000", "X9000" ,"SenseBT222", "SenseCT222"].sort();
-            const originalLabelContent = `<div class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg><span class="text-sm">Click to upload</span></div>`;
+            const originalLabelContent = `<div class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg><span class="text-sm">Click to upload</span></div>`;
             const checkFormState = () => {
                 const cert = document.getElementById('qualityCert').files.length > 0;
                 const invoice = document.getElementById('invoicePdf').files.length > 0;
@@ -332,7 +337,7 @@
             const hiddenInput = document.getElementById('selectedProduct');
             const productListDiv = document.getElementById('productList');
             const container = document.getElementById('productSelectionContainer');
-            if(productListDiv.children.length === 0) { // Only populate product list once
+            if(productListDiv.children.length === 0) {
                 productMasterList.forEach(product => {
                     const item = document.createElement('div');
                     item.textContent = product;
@@ -355,6 +360,9 @@
          }
 
         async function uploadAndAct(actionType) {
+            // CHANGE 3: Store the current action type
+            currentActionType = actionType;
+
             const inBtn = document.getElementById('inventoryInBtn');
             const outBtn = document.getElementById('inventoryOutBtn');
             const activeBtn = actionType === 'inventoryIN' ? inBtn : outBtn;
@@ -372,7 +380,6 @@
                 const res = await fetch(WEBHOOK_URL, { method: "POST", body: formData });
                 if (!res.ok) throw new Error(`Server error: ${res.status}`);
                 
-                // CHANGE: This now handles both IN and OUT responses
                 const responseData = await res.json();
                 window.onInventoryInSuccess(responseData);
 
