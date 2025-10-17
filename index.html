@@ -356,7 +356,7 @@
             const loadingEl = document.getElementById('dashboard-loading');
             contentEl.style.display = 'none';
             loadingEl.style.display = 'block';
-            const url = `https://docs.google.com/spreadsheets/d/1zop-YGn02EyA_Yf5VlcX8bkuFrIAfCoYMIu8A-xErrc/edit?gid=0#gid=0`;
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
             try {
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('Network response was not ok');
