@@ -395,7 +395,7 @@
 
                 // --- FIX 2: Corrected typo from "Warrenty_date" to "Warranty_date" ---
                 const productIndex = headers.indexOf('Product');
-                const warrantyIndex = headers.indexOf('Warrenty_date'); // Corrected typo
+                const warrantyIndex = headers.indexOf('Timestamp OUT'); // Corrected typo
                 
                 if (productIndex === -1) throw new Error('"Product" column not found in Google Sheet.');
                 if (warrantyIndex === -1) console.warn('"Warranty_date" column not found. Remaining stock calculation might be inaccurate.');
