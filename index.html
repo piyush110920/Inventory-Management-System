@@ -678,11 +678,11 @@
             // 2. Find the required column indexes from the headers
             // IMPORTANT: This uses the exact spellings you provided.
             const macIndex = allSheetHeaders.indexOf('MAC Address');
-            const warrantyDateIndex = allSheetHeaders.indexOf('Warrenty_date'); 
+            const warrantyDateIndex = allSheetHeaders.indexOf('Warrentydate'); 
 
             // 3. Check if columns exist in the sheet
             if (macIndex === -1 || warrantyDateIndex === -1) {
-                let errorMsg = macIndex === -1 ? "'MAC Address'" : "'Warrenty_date'";
+                let errorMsg = macIndex === -1 ? "'MAC Address'" : "'Warrentydate'";
                 resultEl.innerHTML = `<span class="text-red-500">Error: Column ${errorMsg} not found in sheet.</span>`;
                 return;
             }
