@@ -266,9 +266,12 @@
         let barChartInstance = null;
         let pieChartInstance = null;
         
+        // --- ADDED ---
+        // Global variables to hold raw sheet data
         let processedData = [];
         let allSheetData = [];
         let allSheetHeaders = [];
+        // --- END ADDED ---
 
         document.addEventListener('DOMContentLoaded', () => {
             const pageContainerIds = ['login-page', 'landing-page', 'inventory-page', 'validation-page', 'dashboard-page']; 
@@ -281,6 +284,7 @@
                 const pageElement = document.getElementById(pageIdToShow);
                 if (pageElement) {
                     pageElement.classList.remove('hidden');
+                    // Check if dashboard data needs to be loaded
                     if (pageIdToShow === 'dashboard-page' && !pageElement.dataset.loaded) {
                         loadDashboardData();
                         pageElement.dataset.loaded = 'true';
@@ -385,7 +389,7 @@
             });
         });
         
-        // --- loadDashboardData (unchanged, still saves raw data) ---
+        // --- MODIFIED: loadDashboardData ---
         async function loadDashboardData() {
             const contentEl = document.getElementById('dashboard-content');
             const loadingEl = document.getElementById('dashboard-loading');
@@ -408,8 +412,10 @@
                 const headers = rows[0];
                 const dataRows = rows.slice(1);
                 
+                // --- ADDED: Store raw data globally ---
                 allSheetHeaders = headers; 
                 allSheetData = dataRows;   
+                // --- END ADDED ---
 
                 const productIndex = headers.indexOf('Product');
                 const warrantyIndex = headers.indexOf('Timestamp OUT'); 
@@ -451,6 +457,7 @@
             } finally {
                 loadingEl.style.display = 'none'; 
                 
+                // --- ADDED: Enable warranty check form after data is loaded ---
                 try {
                     const warrantyInput = document.getElementById('warrantyCheckInput');
                     warrantyInput.disabled = false;
@@ -460,6 +467,7 @@
                 } catch (e) {
                     console.error("Failed to enable warranty check:", e);
                 }
+                // --- END ADDED ---
             }
         }
         
@@ -653,12 +661,13 @@
             tempInput.click();
         }
 
-        // --- MODIFIED: Warranty Check Function ---
+        // --- ADDED: New Warranty Check Function ---
         function checkWarranty() {
             const macInput = document.getElementById('warrantyCheckInput');
             const resultEl = document.getElementById('warrantyResult');
-            const macToFind = macInput.value.trim();
+            const macToFind = macInput.value.trim(); // Get and trim the input value
 
+            // 1. Check for empty input
             if (!macToFind) {
                 resultEl.innerHTML = `<span class="text-red-500">Please enter a MAC Address.</span>`;
                 return;
@@ -666,15 +675,19 @@
 
             resultEl.innerHTML = `<span>Loading...</span>`;
 
+            // 2. Find the required column indexes from the headers
+            // IMPORTANT: This uses the exact spellings you provided.
             const macIndex = allSheetHeaders.indexOf('MAC Address');
             const warrantyDateIndex = allSheetHeaders.indexOf('Warrenty_date'); 
 
+            // 3. Check if columns exist in the sheet
             if (macIndex === -1 || warrantyDateIndex === -1) {
                 let errorMsg = macIndex === -1 ? "'MAC Address'" : "'Warrenty_date'";
                 resultEl.innerHTML = `<span class="text-red-500">Error: Column ${errorMsg} not found in sheet.</span>`;
                 return;
             }
 
+            // 4. Find the row matching the MAC Address
             const foundRow = allSheetData.find(row => row[macIndex] && row[macIndex].trim().toUpperCase() === macToFind.toUpperCase());
 
             if (!foundRow) {
@@ -682,6 +695,7 @@
                 return;
             }
 
+            // 5. Get and parse the warranty date from the found row
             const warrantyDateString = foundRow[warrantyDateIndex];
             if (!warrantyDateString || warrantyDateString.trim() === '') {
                 resultEl.innerHTML = `<span class="text-yellow-500">No warranty date found for this item.</span>`;
@@ -689,54 +703,17 @@
             }
 
             try {
-                // --- FIX: Custom parser for "DD/MM/YYYY & HH:mm:ss pm" format ---
-                const parts = warrantyDateString.split(' & ');
-                if (parts.length !== 2) {
-                    throw new Error(`Unexpected date format: ${warrantyDateString}`);
-                }
-                
-                const datePart = parts[0]; // "17/10/2026"
-                const timePart = parts[1]; // "01:52:53 pm"
-
-                const [day, month, year] = datePart.split('/');
-                
-                const timeParts = timePart.split(' '); // ["01:52:53", "pm"]
-                if (timeParts.length !== 2) {
-                    throw new Error(`Unexpected time format: ${timePart}`);
-                }
-                
-                const [hour, minute, second] = timeParts[0].split(':');
-                const ampm = timeParts[1].toLowerCase();
-
-                let hourInt = parseInt(hour, 10);
-
-                if (ampm === 'pm' && hourInt < 12) {
-                    hourInt += 12; // 1 PM -> 13
-                } else if (ampm === 'am' && hourInt === 12) {
-                    hourInt = 0; // 12 AM -> 0
-                }
-                // --- End of custom parser logic ---
-
-                // Create a standard, parseable string: YYYY-MM-DDTHH:mm:ss
-                const parseableDateString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${String(hourInt).padStart(2, '0')}:${minute}:${second}`;
-                
-                const warrantyDate = new Date(parseableDateString);
-
-                if (isNaN(warrantyDate.getTime())) {
-                    // Check if parsing failed
-                    throw new Error(`Could not parse date: ${parseableDateString}`);
-                }
-                
+                const warrantyDate = new Date(warrantyDateString);
                 const today = new Date();
 
-                // Normalize dates to midnight to compare just the day
+                // Normalize dates to midnight to compare just the day, not the time
                 warrantyDate.setHours(0, 0, 0, 0);
                 today.setHours(0, 0, 0, 0);
 
                 const options = { year: 'numeric', month: 'short', day: 'numeric' };
-                const formattedDate = new Date(parseableDateString).toLocaleDateString('en-US', options); // Use original parsed date for accuracy
+                const formattedDate = warrantyDate.toLocaleDateString('en-US', options);
 
-                // Compare dates and show result
+                // 6. Compare dates and show result
                 if (warrantyDate < today) {
                     resultEl.innerHTML = `<div class="text-center"><span class="text-red-500 font-bold">Out of Warranty</span><br><span class="text-sm">Expired on ${formattedDate}</span></div>`;
                 } else {
@@ -744,11 +721,10 @@
                 }
 
             } catch (e) {
-                console.error("Date parse error:", e.message); // Log the error for debugging
                 resultEl.innerHTML = `<span class="text-red-500">Error: Invalid date format in sheet ('${warrantyDateString}').</span>`;
             }
         }
-        // --- END MODIFIED ---
+        // --- END ADDED ---
 
     </script>
 </body>
