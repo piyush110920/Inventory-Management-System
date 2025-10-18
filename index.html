@@ -212,6 +212,7 @@
             </header>
 
             <div id="dashboard-content" class="grid grid-cols-1 lg:grid-cols-3 gap-6" style="display: none;">
+                
                 <div class="lg:col-span-3 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
                     <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Product Summary</h2>
                     <div class="overflow-x-auto">
@@ -221,16 +222,38 @@
                         </table>
                     </div>
                 </div>
+
                 <div class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
                     <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Remaining Stock by Product</h2>
                     <canvas id="bar-chart"></canvas>
                 </div>
-                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
-                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Stock Breakdown</h2>
-                    <select id="product-filter" class="w-full p-2 mb-4 border bg-gray-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-gray-900 dark:text-gray-100"></select>
-                    <canvas id="pie-chart"></canvas>
+                
+                <div class="lg:col-span-1 space-y-6">
+                    
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Stock Breakdown</h2>
+                        <select id="product-filter" class="w-full p-2 mb-4 border bg-gray-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-gray-900 dark:text-gray-100"></select>
+                        <canvas id="pie-chart"></canvas>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700">
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Warranty Check</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="warrantyCheckInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Enter MAC Address</label>
+                                <input type="text" id="warrantyCheckInput" placeholder="Loading..." disabled class="mt-1 w-full p-2 border bg-gray-50 dark:bg-slate-700 border-gray-300 dark:border-slate-600 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-gray-900 dark:text-gray-100 disabled:opacity-50">
+                            </div>
+                            <button id="warrantyCheckButton" type="button" onclick="checkWarranty()" disabled class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 transition-all-enhanced disabled:opacity-50 disabled:cursor-not-allowed">
+                                Check Status
+                            </button>
+                            <div id="warrantyResult" class="text-center text-gray-600 dark:text-gray-400 pt-2 h-16 flex items-center justify-center">
+                                </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
+            
             <div id="dashboard-loading" class="text-center py-10 text-gray-600 dark:text-gray-400">Loading Dashboard Data...</div>
         </div>
     </div>
@@ -238,11 +261,17 @@
     <script>
         let originalValidationData = {};
         let currentActionType = ''; 
-        const WEBHOOK_URL = "https://ai.senselive.io/webhook-test/senselive-inventory-management-system";
+        const WEBHOOK_URL = "https://ai.senselive.io/webhook/senselive-inventory-management-system";
         const SHEET_ID = '1zop-YGn02EyA_Yf5VlcX8bkuFrIAfCoYMIu8A-xErrc';
         let barChartInstance = null;
         let pieChartInstance = null;
+        
+        // --- ADDED ---
+        // Global variables to hold raw sheet data
         let processedData = [];
+        let allSheetData = [];
+        let allSheetHeaders = [];
+        // --- END ADDED ---
 
         document.addEventListener('DOMContentLoaded', () => {
             const pageContainerIds = ['login-page', 'landing-page', 'inventory-page', 'validation-page', 'dashboard-page']; 
@@ -263,14 +292,13 @@
                 }
             };
             
-            // --- Theme Toggle Logic ---
+            // --- Theme Toggle Logic (unchanged) ---
             const allThemeToggles = document.querySelectorAll('[data-js="theme-toggle"]');
             const allLogos = document.querySelectorAll('[data-js="logo"]');
             const allDarkIcons = document.querySelectorAll('[data-js="theme-icon-dark"]');
             const allLightIcons = document.querySelectorAll('[data-js="theme-icon-light"]');
             const updateThemeUI = () => {
                 const isDark = document.documentElement.classList.contains('dark');
-                // MODIFIED: Swapped placeholder URLs for your local asset paths.
                 const logoUrl = isDark ? 'assets/logo-dark.png' : 'assets/logo-light.png';
                 allLogos.forEach(logo => { logo.src = logoUrl; });
                 allDarkIcons.forEach(icon => isDark ? icon.classList.add('hidden') : icon.classList.remove('hidden'));
@@ -284,7 +312,7 @@
                 });
             });
 
-            // --- Navigation and Auth ---
+            // --- Navigation and Auth (unchanged) ---
             const handleLogout = () => { sessionStorage.removeItem('isLoggedIn'); showPage('login-page'); };
             document.querySelectorAll('[data-js="logout"]').forEach(btn => btn.addEventListener('click', handleLogout));
             document.querySelectorAll('[data-js="navigate"]').forEach(link => {
@@ -298,7 +326,6 @@
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
                 const errorEl = document.getElementById('loginError');
-                // Note: This is simple client-side auth, not for production.
                 if (username === 'Senselive' && password === 'SenseLive@123') {
                     sessionStorage.setItem('isLoggedIn', 'true'); errorEl.classList.add('hidden'); showPage('landing-page');
                 } else {
@@ -306,7 +333,7 @@
                 }
             });
 
-            // --- Validation Page Logic ---
+            // --- Validation Page Logic (unchanged) ---
             const validationForm = document.getElementById('validationForm');
             const updateBtn = document.getElementById('updateBtn');
             const nextBtn = document.getElementById('nextBtn');
@@ -350,7 +377,7 @@
             });
             nextBtn.addEventListener('click', () => { initializeInventoryPage(); showPage('inventory-page'); });
             
-            // --- Initial App Load ---
+            // --- Initial App Load (unchanged) ---
             if (sessionStorage.getItem('isLoggedIn') === 'true') { showPage('landing-page'); } 
             else { showPage('login-page'); }
             updateThemeUI();
@@ -362,6 +389,7 @@
             });
         });
         
+        // --- MODIFIED: loadDashboardData ---
         async function loadDashboardData() {
             const contentEl = document.getElementById('dashboard-content');
             const loadingEl = document.getElementById('dashboard-loading');
@@ -384,6 +412,11 @@
                 const headers = rows[0];
                 const dataRows = rows.slice(1);
                 
+                // --- ADDED: Store raw data globally ---
+                allSheetHeaders = headers; 
+                allSheetData = dataRows;   
+                // --- END ADDED ---
+
                 const productIndex = headers.indexOf('Product');
                 const warrantyIndex = headers.indexOf('Timestamp OUT'); 
                 
@@ -399,7 +432,6 @@
                         }
                         productCounts[productName].totalIn++;
                         
-                        // Item is remaining if the timestamp out column is empty
                         const warrantyValue = (warrantyIndex > -1) ? row[warrantyIndex] : undefined;
                         if (!warrantyValue || warrantyValue.trim() === '') {
                              productCounts[productName].remaining++;
@@ -413,21 +445,33 @@
                     remaining: counts.remaining 
                 }));
 
-                // Render the dashboard components with the processed data
                 renderSummaryTable();
                 renderBarChart();
                 populateProductFilter();
                 updatePieChart('all');
-                contentEl.style.display = 'grid'; // Show the content
+                contentEl.style.display = 'grid';
 
             } catch (error) {
                 loadingEl.textContent = `Failed to load dashboard data. Error: ${error.message}`;
                 console.error("Dashboard Error:", error);
             } finally {
-                loadingEl.style.display = 'none'; // Hide loading indicator
+                loadingEl.style.display = 'none'; 
+                
+                // --- ADDED: Enable warranty check form after data is loaded ---
+                try {
+                    const warrantyInput = document.getElementById('warrantyCheckInput');
+                    warrantyInput.disabled = false;
+                    warrantyInput.placeholder = "e.g., 00:1A:2B:3C:4D:5E";
+                    document.getElementById('warrantyCheckButton').disabled = false;
+                    document.getElementById('warrantyResult').textContent = 'Enter a MAC ID to check status.';
+                } catch (e) {
+                    console.error("Failed to enable warranty check:", e);
+                }
+                // --- END ADDED ---
             }
         }
         
+        // --- (Unchanged dashboard functions: renderSummaryTable, renderBarChart, populateProductFilter, updatePieChart) ---
         function renderSummaryTable() {
             const tableBody = document.querySelector('#summary-table tbody');
             const tableHead = document.querySelector('#summary-table thead');
@@ -439,7 +483,6 @@
                     <td class="px-6 py-4">${item.totalIn}</td><td class="px-6 py-4">${item.remaining}</td></tr>`);
             });
         }
-
         function renderBarChart() {
             const ctx = document.getElementById('bar-chart').getContext('2d');
             if (barChartInstance) barChartInstance.destroy();
@@ -458,7 +501,6 @@
                 options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
             });
         }
-
         function populateProductFilter() {
             const filter = document.getElementById('product-filter');
             filter.innerHTML = '<option value="all">All Products</option>';
@@ -466,7 +508,6 @@
                 filter.insertAdjacentHTML('beforeend', `<option value="${item.product}">${item.product}</option>`);
             });
         }
-
         function updatePieChart(selectedProduct) {
             const ctx = document.getElementById('pie-chart').getContext('2d');
             let dataToShow = { totalIn: 0, remaining: 0 };
@@ -496,6 +537,7 @@
             });
         }
 
+        // --- (Unchanged helper functions: togglePasswordVisibility, initializeInventoryPage, uploadAndAct, showFilePreview, captureImage) ---
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eyeIcon');
@@ -506,7 +548,6 @@
                 passwordInput.type = 'password'; eyeIcon.classList.remove('hidden'); eyeOffIcon.classList.add('hidden');
             }
         }
-        
         function initializeInventoryPage() {
             const productMasterList = ["X5050", "X3050", "X5050D", "X3030", "X5600", "X5070", "X5200", "X6000", "X6600", "X8400R", "X7400", "X7400D", "X7400A", "X7400E", "X7777", "X7788", "X7700D", "X7900", "X7800", "X7090", "X7080", "X7050D", "X8550", "X8553", "X8555", "E7066", "E7566", "E7500", "E7000", "E7575", "E7570", "E6858", "E7999", "E6888", "E7510D", "E7510A", "E7010D", "E7010A", "S2385H", "S485H", "2M1S", "S2345", "X6070", "X6050", "X9090", "X9900", "Edge8000", "X9000" ,"SenseBT222", "SenseCT222"].sort();
             const originalLabelContent = `<div class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg><span class="text-sm">Click to upload</span></div>`;
@@ -560,7 +601,6 @@
             document.addEventListener('click', (event) => { if (container && !container.contains(event.target)) productListDiv.classList.add('hidden'); });
             resetApp();
        }
-
         async function uploadAndAct(actionType) {
             currentActionType = actionType;
             const inBtn = document.getElementById('inventoryInBtn');
@@ -590,7 +630,6 @@
                 activeBtn.querySelector('.btn-text').textContent = actionType === 'inventoryIN' ? 'Inventory IN' : 'Inventory OUT';
             }
         }
-
         function showFilePreview(inputId, labelId, previewId) { 
             const input = document.getElementById(inputId);
             const label = document.getElementById(labelId);
@@ -607,7 +646,6 @@
                 }
             }
         }
-
         function captureImage(targetInputId) {
             const tempInput = document.createElement("input");
             tempInput.type = "file";
@@ -622,6 +660,72 @@
             };
             tempInput.click();
         }
+
+        // --- ADDED: New Warranty Check Function ---
+        function checkWarranty() {
+            const macInput = document.getElementById('warrantyCheckInput');
+            const resultEl = document.getElementById('warrantyResult');
+            const macToFind = macInput.value.trim(); // Get and trim the input value
+
+            // 1. Check for empty input
+            if (!macToFind) {
+                resultEl.innerHTML = `<span class="text-red-500">Please enter a MAC Address.</span>`;
+                return;
+            }
+
+            resultEl.innerHTML = `<span>Loading...</span>`;
+
+            // 2. Find the required column indexes from the headers
+            // IMPORTANT: This uses the exact spellings you provided.
+            const macIndex = allSheetHeaders.indexOf('MAC Address');
+            const warrantyDateIndex = allSheetHeaders.indexOf('Warrenty_date'); 
+
+            // 3. Check if columns exist in the sheet
+            if (macIndex === -1 || warrantyDateIndex === -1) {
+                let errorMsg = macIndex === -1 ? "'MAC Address'" : "'Warrenty_date'";
+                resultEl.innerHTML = `<span class="text-red-500">Error: Column ${errorMsg} not found in sheet.</span>`;
+                return;
+            }
+
+            // 4. Find the row matching the MAC Address
+            const foundRow = allSheetData.find(row => row[macIndex] && row[macIndex].trim().toUpperCase() === macToFind.toUpperCase());
+
+            if (!foundRow) {
+                resultEl.innerHTML = `<span class="text-red-500">MAC Address not found.</span>`;
+                return;
+            }
+
+            // 5. Get and parse the warranty date from the found row
+            const warrantyDateString = foundRow[warrantyDateIndex];
+            if (!warrantyDateString || warrantyDateString.trim() === '') {
+                resultEl.innerHTML = `<span class="text-yellow-500">No warranty date found for this item.</span>`;
+                return;
+            }
+
+            try {
+                const warrantyDate = new Date(warrantyDateString);
+                const today = new Date();
+
+                // Normalize dates to midnight to compare just the day, not the time
+                warrantyDate.setHours(0, 0, 0, 0);
+                today.setHours(0, 0, 0, 0);
+
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                const formattedDate = warrantyDate.toLocaleDateString('en-US', options);
+
+                // 6. Compare dates and show result
+                if (warrantyDate < today) {
+                    resultEl.innerHTML = `<div class="text-center"><span class="text-red-500 font-bold">Out of Warranty</span><br><span class="text-sm">Expired on ${formattedDate}</span></div>`;
+                } else {
+                    resultEl.innerHTML = `<div class="text-center"><span class="text-green-500 font-bold">Under Warranty</span><br><span class="text-sm">Valid until ${formattedDate}</span></div>`;
+                }
+
+            } catch (e) {
+                resultEl.innerHTML = `<span class="text-red-500">Error: Invalid date format in sheet ('${warrantyDateString}').</span>`;
+            }
+        }
+        // --- END ADDED ---
+
     </script>
 </body>
 </html>
